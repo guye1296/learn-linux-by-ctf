@@ -1,0 +1,19 @@
+# Challenge configuration file
+
+[general]
+# will be used for display and flag generation
+challenge_name = "introduction"
+
+# not sure whether to include this or create a `hints` directory
+# list of hint files the user can ask for
+hints = []
+
+
+## Build requirements
+[build]
+# required `.deb` packages
+required_packages = []
+
+# scripts that are run on challenge creation
+# build fails if any script returns nonzero return code
+build_scripts = []
