@@ -54,6 +54,12 @@ COPY --from=challenges /etc/gshadow /etc/gshadow
 
 RUN chmod -R 400 /internal
 
+# copy system-wide binaries to host
+COPY scripts/display-current-challenge.sh /usr/bin/display-challenge
+
+# set /etc/profile to display challenge upon login
+RUN sed -i '1s;^;display-challenge\n\n;' /etc/bash.bashrc
+
 # set user and workdir to first challenge
 USER challenge00
 WORKDIR /home/challenge00
