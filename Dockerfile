@@ -30,7 +30,7 @@ RUN python3 -m pip install -r requirements.txt
 
 # create users and store flags
 COPY scripts/create_users.py .
-COPY scripts/generate_flag.py .
+COPY scripts/flag.py .
 RUN chmod +x create_users.py
 RUN ./create_users.py
 
@@ -51,9 +51,6 @@ COPY --from=challenges /etc/passwd /etc/passwd
 COPY --from=challenges /etc/shadow /etc/shadow
 COPY --from=challenges /etc/group /etc/group
 COPY --from=challenges /etc/gshadow /etc/gshadow
-
-# copy flags and make it only accessible to root
-COPY --from=challenges /flags /internal/flags
 
 RUN chmod -R 400 /internal
 
