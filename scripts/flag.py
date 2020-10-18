@@ -6,7 +6,7 @@ import string
 import jinja2
 
 
-RANDOM_SUFFIX_LENGTH = 8
+RANDOM_SUFFIX_LENGTH = 4
 
 
 def generate(challenge_name: str) -> str:

@@ -2,7 +2,7 @@
 
 [general]
 # will be used for display and flag generation
-challenge_name = "introduction"
+challenge_name = "intro"
 
 # not sure whether to include this or create a `hints` directory
 # list of hint files the user can ask for

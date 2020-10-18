@@ -9,10 +9,6 @@ RUN python3 -m pip install -r /tmp/requirements.txt && rm /tmp/requirements.txt
 
 # TODO: figure out on how to install challenge dependencies that are needed for runtime
 
-# copy essential scripts to path
-COPY --chown=root:root  scripts/display-current-challenge.sh /usr/bin/display-challenge
-# allow execute permission to everyone
-RUN chmod a+x /usr/bin/display-challenge
 
 
 # -- build challeges --
@@ -24,15 +20,15 @@ COPY challenges/ challenges/
 RUN mkdir -p /home/challenges/home
 RUN mkdir -p /home/challenges/internal
 
-# copy script requirements
-COPY scripts/requirements.txt .
-RUN python3 -m pip install -r requirements.txt
+COPY scripts/ scripts/
+# install script requirements
+RUN python3 -m pip install -r scripts/requirements.txt
+RUN apt install make gcc
+RUN cd scripts && make
 
 # create users and store flags
-COPY scripts/create_users.py .
-COPY scripts/flag.py .
-RUN chmod +x create_users.py
-RUN ./create_users.py
+RUN chmod +x scripts/create_users.py
+RUN ./scripts/create_users.py
 
 
 # -- final image --
@@ -54,11 +50,15 @@ COPY --from=challenges /etc/gshadow /etc/gshadow
 
 RUN chmod -R 400 /internal
 
-# copy system-wide binaries to host
-COPY scripts/display-current-challenge.sh /usr/bin/display-challenge
+# copy essential scripts to path
+COPY --chown=root:root  scripts/display-current-challenge.sh /usr/bin/display-challenge
+COPY --chown=root:root scripts/get_next_challenge.py /usr/bin/get-next-challenge
+COPY --from=challenges /scripts/guess_flag /usr/bin/_guess-flag
 
+# allow execute permission to everyone
+RUN chmod a+x /usr/bin/display-challenge
 # set /etc/profile to display challenge upon login
-RUN sed -i '1s;^;display-challenge\n\n;' /etc/bash.bashrc
+RUN sed -i '1s;^;alias guess-flag="exec /usr/bin/_guess-flag"\ndisplay-challenge\n\n;' /etc/bash.bashrc
 
 # set user and workdir to first challenge
 USER challenge00
