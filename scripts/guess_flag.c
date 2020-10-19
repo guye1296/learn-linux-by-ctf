@@ -10,6 +10,11 @@
 #include <errno.h>
 #include <shadow.h>
 
+#define TERMINAL_BOLD_GREEN  "\033[1;32m"
+#define TERMINAL_RED "\033[0;31m"
+#define TERMINAL_BOLD_CYAN "\033[1;36m"
+#define TERMINAL_COLOR_RESET "\033[0m"
+
 
 /* Ask the user for a password.
    Return true if the user gives the correct password for entry PW,
@@ -17,7 +22,9 @@
    or if PW has an empty password.  */
 static bool guess_flag(const struct passwd *pw)
 {
-    char *guess, *encrypted, *correct;
+    char *encrypted, *correct;
+    char guess[128];
+    char *index = NULL;
     struct spwd *spwd = getspnam(pw->pw_name);
 
     if (NULL == spwd) {
@@ -32,8 +39,14 @@ static bool guess_flag(const struct passwd *pw)
         return true;
 
     // ask user to enter flag
-    printf("Enter Flag: ");
-    scanf("%s", guess);
+    printf("Enter Flag for " TERMINAL_BOLD_CYAN "%s" TERMINAL_COLOR_RESET ": ", pw->pw_name);
+    fgets(guess, 128, stdin);
+
+    // remove newline from string
+    index = strchr(guess, '\n');
+    if (NULL != index) {
+        *index = '\0';
+    }
 
     if (!guess)
     {
@@ -92,24 +105,20 @@ static void run_shell (char const *shell)
 }
 
 
-// TODO: actually implement
-static char* get_next_challenge() {
-	char* next = "challenge99";
-	return strdup(next);
-}
-
-
-
 int main(int argc, char *argv[]) {
     int status = 0;
     char *next_challenge;
     struct passwd *pw = NULL;
     struct passwd pw_copy;
 
-    next_challenge = get_next_challenge();
+    if (2 != argc) {
+        fprintf(stderr, "USAGE: %s [CHALLENGE]\n", argv[0]);
+        exit(1);	
+    }
 
-    pw = getpwnam(get_next_challenge());
-    (void)free(next_challenge);
+    next_challenge = argv[1];
+
+    pw = getpwnam(next_challenge);
     if (! (pw && pw->pw_name && pw->pw_name[0] && pw->pw_dir && pw->pw_dir[0] && pw->pw_passwd)) {
         fprintf(stderr, "user does not exist\n");
         status = 1;
@@ -131,12 +140,12 @@ int main(int argc, char *argv[]) {
     endpwent();
 
     if (!guess_flag(pw)) {
-        fprintf(stderr, "incorrect flag :(\n");
+        fprintf(stderr, TERMINAL_RED "incorrect flag :(" TERMINAL_COLOR_RESET "\n");
         status = 2;
         goto cleanup;
     }
 
-    printf("Good job! Moving to the next challenge\n");
+    printf(TERMINAL_BOLD_GREEN "Good job!" TERMINAL_COLOR_RESET " Moving to the next challenge\n");
 
     // flag is correct! yay!!
     modify_environment(pw, pw->pw_shell);
@@ -159,5 +168,8 @@ cleanup:
     if(pw->pw_shell) {
         (void)free(pw->pw_shell);
     }
+    // spawn new shell since this is executed with `exec`
+    // TODO: this is a temporary solution, fix this
+    run_shell("/bin/bash");
     return status;
 }

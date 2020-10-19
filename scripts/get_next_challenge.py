@@ -7,7 +7,7 @@ import sys
 
 
 def get_all_ctf_users() -> list:
-    users = [p.pwname for p in pwd.getpwall() if p.pwname.startswith('challenge')]
+    users = [p.pw_name for p in pwd.getpwall() if p.pw_name.startswith('challenge')]
     # sort users by name
     users.sort()
     return users

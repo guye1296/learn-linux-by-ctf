@@ -10,6 +10,6 @@ a flag - a series of characters indicating that you have completed the challenge
 The flag for this challenge is **{{flag}}**
 
 You can test the flag typing:
-`test-flag {{flag}}`
+`flag`
 
 

@@ -52,13 +52,14 @@ RUN chmod -R 400 /internal
 
 # copy essential scripts to path
 COPY --chown=root:root  scripts/display-current-challenge.sh /usr/bin/display-challenge
-COPY --chown=root:root scripts/get_next_challenge.py /usr/bin/get-next-challenge
+COPY --chown=root:root scripts/get_next_challenge.py /usr/bin/_get-next-challenge
 COPY --from=challenges /scripts/guess_flag /usr/bin/_guess-flag
+COPY --from=challenges /scripts/guess_flag.sh /usr/bin/_guess-flag.sh
 
 # allow execute permission to everyone
 RUN chmod a+x /usr/bin/display-challenge
 # set /etc/profile to display challenge upon login
-RUN sed -i '1s;^;alias guess-flag="exec /usr/bin/_guess-flag"\ndisplay-challenge\n\n;' /etc/bash.bashrc
+RUN sed -i '1s;^;alias flag="exec /usr/bin/_guess-flag.sh"\ndisplay-challenge\n\n;' /etc/bash.bashrc
 
 # set user and workdir to first challenge
 USER challenge00
