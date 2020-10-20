@@ -1,0 +1,31 @@
+# Challenge configuration file
+
+[general]
+# will be used for display and flag generation
+challenge_name = "cd"
+
+# not sure whether to include this or create a `hints` directory
+# list of hint files the user can ask for
+hints = []
+
+
+# default shell
+shell = '/bin/bash'
+
+## Build requirements
+[build]
+# required `.deb` packages
+required_packages = []
+
+# scripts that are run on challenge creation
+# build fails if any script returns nonzero return code
+build_scripts = []
+
+# files containing the flag to patch, jinja2 style - put {{flag}} wherever you want to patch
+files_containing_flag = ['files/home/me/.meta/flag.txt']
+
+# files that will be copied to the output challenge, preserving their permissions
+# for now, dst is relative to the home directory
+files_to_copy = [
+    {src = "files/", dst="./"}
+]
