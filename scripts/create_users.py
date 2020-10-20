@@ -17,7 +17,6 @@ import flag
 
 CHALLENGES_BASE_DIR = './challenges'
 USERS_HOME_BASE_DIR = '/home/challenges/home/'
-FLAGS_FILE_PATH = '/flags'
 
 
 @dataclasses.dataclass
@@ -78,12 +77,14 @@ class CtfChallenge:
         # iterate files to copy
         for file_pair in self._config["build"]["files_to_copy"]:
             # `toml` does not supports unpacking of tables
-            src, dst = file_pair.values()
-            shutil.copytree(
-                os.path.join(self.challenge_dir, src),
-                os.path.join(self.build_stage_home_dir, dst),
-                dirs_exist_ok=True
-            )
+            srcname, dstname = file_pair.values()
+            src = os.path.join(self.challenge_dir, srcname)
+            dst = os.path.join(self.build_stage_home_dir, dstname)
+
+            if (os.path.isdir(src)):
+                shutil.copytree(src, dst, dirs_exist_ok=True)
+            else:
+                shutil.copy2(src, dst)
 
 
 def create_all_users(challenges_base_dir, users_home_base_dir):
@@ -94,6 +95,9 @@ def create_all_users(challenges_base_dir, users_home_base_dir):
 
     # make home base directory
     os.makedirs(users_home_base_dir, exist_ok=True)
+
+    # sort challenges just in case
+    challenges_directories.sort()
 
     # list of users. list ends each user maps to a dict containing the d
     users = []
