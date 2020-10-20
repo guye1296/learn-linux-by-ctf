@@ -1,3 +1,4 @@
+[![Docker Actions Status](https://github.com/guye1296/learn-linux-by-ctf/workflows/Docker/badge.svg)](https://github.com/guye1296/learn-linux-by-ctf/actions)
 # Learn Linux by CTF
 
 Learn how to use a Linux commandline in a fun, gameful manner - by playing capture the flag!
