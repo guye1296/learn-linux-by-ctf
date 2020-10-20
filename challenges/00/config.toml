@@ -27,5 +27,4 @@ files_containing_flag = ['description.md']
 # files that will be copied to the output challenge, preserving their permissions
 # for now, dst is relative to the home directory
 files_to_copy = [
-    {src = "files/", dst="./"}
 ]
