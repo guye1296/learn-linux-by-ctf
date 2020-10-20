@@ -1,2 +1,4 @@
 #!/bin/bash
-mdv ~/.description
+if [ "$PROMPT_CHALLENGE" = "1" ]; then
+	mdv $HOME/.description
+fi

@@ -7,7 +7,7 @@ if [ $# -gt 3 ]; then
 	echo USAGE: $0 [CHALLENGE]
 fi
 
-if [ $# -eq 2 ]; then
+if [ $# -eq 1 ]; then
 	CHALLENGE=$1
 fi
 

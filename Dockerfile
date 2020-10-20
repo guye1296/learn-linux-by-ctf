@@ -62,6 +62,9 @@ RUN chmod a+x /usr/bin/display-challenge
 RUN sed -i '1s;^;alias flag="exec /usr/bin/_guess-flag.sh"\ndisplay-challenge\n\n;' /etc/bash.bashrc
 
 # set user and workdir to first challenge
+
+ENV PROMPT_CHALLENGE=1
+
 USER challenge00
 WORKDIR /home/challenge00
 ENTRYPOINT /bin/bash

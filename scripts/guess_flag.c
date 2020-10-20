@@ -9,12 +9,18 @@
 #include <stdbool.h>
 #include <errno.h>
 #include <shadow.h>
+#include <limits.h>
 
 #define TERMINAL_BOLD_GREEN  "\033[1;32m"
 #define TERMINAL_RED "\033[0;31m"
 #define TERMINAL_BOLD_CYAN "\033[1;36m"
 #define TERMINAL_COLOR_RESET "\033[0m"
 
+// for some reason limits.h does not contain MAX_PATH
+// on some platforms
+#ifndef MAX_PATH
+#define MAX_PATH (4094)
+#endif 
 
 /* Ask the user for a password.
    Return true if the user gives the correct password for entry PW,
@@ -93,11 +99,19 @@ static void change_identity (const struct passwd *pw)
    Pass ADDITIONAL_ARGS to the shell as more arguments; there
    are N_ADDITIONAL_ARGS extra arguments.  */
 
-static void run_shell (char const *shell)
+static void run_shell (char const *shell, bool prompt)
 {
     int exit_status;
+
     // TODO: change to actuall shell
     char *args[] = {"/bin/bash", NULL};
+
+    // set prompt environ
+    if(prompt) {
+        setenv("PROMPT_CHALLENGE", "1", true);
+    } else {
+        setenv("PROMPT_CHALLENGE", "0", true);
+    }
 
     execv(shell, args);
     exit_status = (errno == ENOENT ? ENOENT : 3);
@@ -105,20 +119,28 @@ static void run_shell (char const *shell)
 }
 
 
-int main(int argc, char *argv[]) {
-    int status = 0;
-    char *next_challenge;
+
+static char* get_current_dir() 
+{
+    // all calls will be null if failed
+    char* curdir = malloc(MAX_PATH);
+    curdir = getcwd(curdir, MAX_PATH);
+
+    cleanup:
+        return curdir;
+}
+
+
+
+static int change_context(char *user)
+{
+    unsigned int status = 0;
     struct passwd *pw = NULL;
     struct passwd pw_copy;
+    char *dir = NULL;
+    bool same_user = false;
 
-    if (2 != argc) {
-        fprintf(stderr, "USAGE: %s [CHALLENGE]\n", argv[0]);
-        exit(1);	
-    }
-
-    next_challenge = argv[1];
-
-    pw = getpwnam(next_challenge);
+    pw = getpwnam(user);
     if (! (pw && pw->pw_name && pw->pw_name[0] && pw->pw_dir && pw->pw_dir[0] && pw->pw_passwd)) {
         fprintf(stderr, "user does not exist\n");
         status = 1;
@@ -139,23 +161,44 @@ int main(int argc, char *argv[]) {
     pw->pw_shell = strdup(pw->pw_shell && pw->pw_shell[0] ? pw->pw_shell : "/bin/bash");
     endpwent();
 
-    if (!guess_flag(pw)) {
-        fprintf(stderr, TERMINAL_RED "incorrect flag :(" TERMINAL_COLOR_RESET "\n");
-        status = 2;
-        goto cleanup;
+    // if same user, its proably a failure. skip flag check
+    // in addition, do not change its directory
+    same_user = (pw->pw_uid ==getuid());
+    if (!same_user) {
+        if (!guess_flag(pw)) {
+            fprintf(stderr, TERMINAL_RED "incorrect flag :(" TERMINAL_COLOR_RESET "\n");
+            status = 2;
+            goto cleanup;
+        } 
+        printf(TERMINAL_BOLD_GREEN "Good job!" TERMINAL_COLOR_RESET " Moving to the next challenge\n");
+    } 
+    else {
+        if (pw->pw_dir) {
+            (void)free(pw->pw_dir);
+        }
+        pw->pw_dir = get_current_dir();
     }
 
-    printf(TERMINAL_BOLD_GREEN "Good job!" TERMINAL_COLOR_RESET " Moving to the next challenge\n");
 
     // flag is correct! yay!!
     modify_environment(pw, pw->pw_shell);
     change_identity(pw);
+
     if(chdir(pw->pw_dir)) {
         fprintf(stderr, "warning: can not change to dir %s\n", pw->pw_dir);
     }
-    run_shell(pw->pw_shell);
 
-cleanup:
+    // verbose code for readability
+    if (same_user) {
+        run_shell(pw->pw_shell, false);
+    } else {
+        run_shell(pw->pw_shell, true);
+    }
+
+    cleanup:
+    if(dir) {
+        (void)free(dir);
+    }
     if(pw->pw_name) {
         (void)free(pw->pw_name);
     }
@@ -168,8 +211,63 @@ cleanup:
     if(pw->pw_shell) {
         (void)free(pw->pw_shell);
     }
-    // spawn new shell since this is executed with `exec`
-    // TODO: this is a temporary solution, fix this
-    run_shell("/bin/bash");
+    return status;
+}
+
+
+char *get_current_user()
+{
+    struct passwd *pw = NULL;
+    char *user = NULL;
+
+    pw = getpwuid(getuid());
+    endpwent();
+
+    if(pw && pw->pw_name) {
+        user = strdup(pw->pw_name);
+    }
+
+    return user;
+}
+
+
+// user probably guessed flag wrong
+int fallback() {
+    // get user name
+    int status = 0;
+    char* current_user = get_current_user();
+
+    if (NULL == current_user) {
+        status = 1;
+        goto cleanup;
+    }
+
+    status = change_context(current_user);
+
+cleanup:
+    if(NULL != current_user) {
+        free(current_user);
+    }
+
+    return status;
+}
+
+
+int main(int argc, char *argv[]) {
+    int status = 0;
+    char *next_challenge;
+
+    if (2 != argc) {
+        fprintf(stderr, "USAGE: %s [CHALLENGE]\n", argv[0]);
+        exit(1);	
+    }
+
+    next_challenge = argv[1];
+    status = change_context(next_challenge);
+
+    if (0 != status) {
+        status = fallback();
+    }
+
     return status;
 }
