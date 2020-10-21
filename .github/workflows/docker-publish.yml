@@ -14,7 +14,7 @@ on:
   pull_request:
 
 env:
-  IMAGE_NAME: guye1296/learn-linux-by-ctf
+  IMAGE_NAME: guye1296/linux-by-ctf
 
 jobs:
   # Run tests.

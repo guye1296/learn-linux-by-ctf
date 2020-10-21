@@ -3,7 +3,7 @@
 
 CHALLENGE=$(/usr/bin/_get-next-challenge)
 
-if [ $# -gt 3 ]; then
+if [ $# -gt 2 ]; then
 	echo USAGE: $0 [CHALLENGE]
 fi
 

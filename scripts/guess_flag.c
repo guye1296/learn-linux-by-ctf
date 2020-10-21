@@ -144,6 +144,7 @@ static int change_context(char *user)
     if (! (pw && pw->pw_name && pw->pw_name[0] && pw->pw_dir && pw->pw_dir[0] && pw->pw_passwd)) {
         fprintf(stderr, "user does not exist\n");
         status = 1;
+        endpwent();
         goto cleanup;
     }
 
@@ -199,17 +200,19 @@ static int change_context(char *user)
     if(dir) {
         (void)free(dir);
     }
-    if(pw->pw_name) {
-        (void)free(pw->pw_name);
-    }
-    if(pw->pw_passwd) {
-        (void)free(pw->pw_passwd);
-    }
-    if(pw->pw_dir) {
-        (void)free(pw->pw_dir);
-    }
-    if(pw->pw_shell) {
-        (void)free(pw->pw_shell);
+    if(pw) {
+        if(pw->pw_name) {
+            (void)free(pw->pw_name);
+        }
+        if(pw->pw_passwd) {
+            (void)free(pw->pw_passwd);
+        }
+        if(pw->pw_dir) {
+            (void)free(pw->pw_dir);
+        }
+        if(pw->pw_shell) {
+            (void)free(pw->pw_shell);
+        }
     }
     return status;
 }
