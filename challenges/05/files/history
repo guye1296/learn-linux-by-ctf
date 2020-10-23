@@ -1,0 +1,16 @@
+ls
+mkdir my_directory
+cd my_directory
+touch my_file
+cat my_file
+ls
+echo "We will study output redirection in future challenges :)" > my_file
+ls -la
+cat my_file
+rm my_file
+ls
+cd ~
+echo The current date is $(date)
+echo "Nice try! but this is not the flag :("
+echo -e "Good job!\nYou found the flag!\nBe sure to browse the history file and search about other commands you encounter here and don't know.\nThe flag is: {{flag}}"
+echo "This is not the flag"

@@ -19,6 +19,36 @@ CHALLENGES_BASE_DIR = './challenges'
 USERS_HOME_BASE_DIR = '/home/challenges/home/'
 
 
+
+def _chown(path, user, group=None, recursive=False):
+    """ Change user/group ownership of file
+
+    Arguments:
+    path: path of file or directory
+    user: new owner username
+    group: new owner group name
+    recursive: set files/dirs recursively
+    """
+    if group is None:
+        group = user
+
+    try:
+        if not recursive or os.path.isfile(path):
+            shutil.chown(path, user, group)
+        else:
+            for root, dirs, files in os.walk(path):
+                shutil.chown(root, user, group)
+                for item in dirs:
+                    shutil.chown(os.path.join(root, item), user, group)
+                for item in files:
+                    shutil.chown(os.path.join(root, item), user, group)
+    except OSError as e:
+        print(str(e))
+        raise e
+    except LookupError as e:
+        print(str(e))
+
+
 @dataclasses.dataclass
 class CtfChallenge:
     username: str
@@ -47,9 +77,7 @@ class CtfChallenge:
 
         os.makedirs(self.build_stage_home_dir, exist_ok=True)
         # change home directory's permission
-        uid = pwd.getpwnam(self.username).pw_uid
-        gid = grp.getgrnam(self.username).gr_gid
-        os.chown(self.build_stage_home_dir, uid=uid, gid=gid)
+        _chown(self.build_stage_home_dir, self.username, recursive=True)
         # folder should not be visible to other users
         os.chmod(self.build_stage_home_dir, 0o760)
 
@@ -69,6 +97,13 @@ class CtfChallenge:
             )
 
     def build_challenge(self):
+        """
+        build the challenge files 
+        and populate the challenge's home directory according to the
+        challenge configuration
+
+        :note function is executed *after* the user was created
+        """
         self._patch_flag()
         self._run_build_scripts()
 
@@ -79,11 +114,16 @@ class CtfChallenge:
         )
 
         # iterate files to copy
-        for file_pair in self._config["build"]["files_to_copy"]:
+        for entry in self._config["build"]["files_to_copy"]:
             # `toml` does not supports unpacking of tables
-            srcname, dstname = file_pair.values()
+            srcname = entry["src"]
+            dstname = entry["dst"]
             src = os.path.join(self.challenge_dir, srcname)
             dst = os.path.join(self.build_stage_home_dir, dstname)
+
+            # if user and group were specifid, user those
+            user = entry.get("user", self.username)
+            group = entry.get("group", self.username)
 
             if not os.path.exists(os.path.dirname(dst)):
                 os.makedirs(os.path.dirname(dst))
@@ -92,6 +132,7 @@ class CtfChallenge:
                 shutil.copytree(src, dst, dirs_exist_ok=True)
             else:
                 shutil.copy2(src, dst)
+            _chown(dst, user, group, recursive=True)
 
 
 def create_all_users(challenges_base_dir, users_home_base_dir):

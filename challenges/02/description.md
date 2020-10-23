@@ -17,7 +17,7 @@ When run with a `--help` argument, a command will display a list of the differen
 
 
 # Your goal
-The `ls` will *list* files at the current directory. It has other options as well ;)
+The `ls` command *lists* files at the current directory. It has other options as well ;)
 
 There is a hidden file containing the flag, find it!
 
