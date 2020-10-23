@@ -62,7 +62,11 @@ class CtfChallenge:
             flag.patch_file_with_flag(os.path.join(self.challenge_dir, file_path), self.flag)
 
     def _run_build_scripts(self):
-        pass
+        for script_path in self._config["build"]["build_scripts"]:
+            subprocess.check_call(
+                shlex.split(f"{os.path.join(self.challenge_dir, script_path)}"),
+                shell=True
+            )
 
     def build_challenge(self):
         self._patch_flag()
@@ -80,6 +84,9 @@ class CtfChallenge:
             srcname, dstname = file_pair.values()
             src = os.path.join(self.challenge_dir, srcname)
             dst = os.path.join(self.build_stage_home_dir, dstname)
+
+            if not os.path.exists(os.path.dirname(dst)):
+                os.makedirs(os.path.dirname(dst))
 
             if (os.path.isdir(src)):
                 shutil.copytree(src, dst, dirs_exist_ok=True)
