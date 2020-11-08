@@ -8,6 +8,7 @@ The root directory has many folders and files which you can store more folders a
 
 Here is an example of what the directory tree looks like:
 
+```
 /
 |-- bin
 |   |-- file1
@@ -19,6 +20,7 @@ Here is an example of what the directory tree looks like:
 |       `-- file5
 |-- home
 |-- var
+```
 
 The location of these files and directories are referred to as paths.
 
