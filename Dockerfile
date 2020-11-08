@@ -1,15 +1,20 @@
 FROM ubuntu:latest AS base
 
 # install required packages
+ENV DEBIAN_FRONTEND=noninteractive 
 RUN apt update
-RUN apt install -y python3 python3-pip
-
-COPY requirements.txt /tmp/
-RUN python3 -m pip install -r /tmp/requirements.txt && rm /tmp/requirements.txt
+RUN apt install -y python3 python3-pip less vim
 
 # TODO: figure out on how to install challenge dependencies that are needed for runtime
 
+FROM base AS binaries
 
+RUN apt install -y golang-go git
+
+# -- build and install glow md parser --
+RUN git clone https://github.com/charmbracelet/glow
+RUN mkdir -p /home/go/bin
+RUN cd glow && env GOBIN=/home/go/bin/ go install
 
 # -- build challeges --
 
@@ -23,7 +28,7 @@ RUN mkdir -p /home/challenges/internal
 COPY scripts/ scripts/
 # install script requirements
 RUN python3 -m pip install -r scripts/requirements.txt
-RUN apt install make gcc
+RUN apt install -y make gcc
 RUN cd scripts && make
 
 # create users and store flags
@@ -51,7 +56,8 @@ COPY --from=challenges /etc/gshadow /etc/gshadow
 RUN chmod -R 400 /internal
 
 # copy essential scripts to path
-COPY --chown=root:root  scripts/display-current-challenge.sh /usr/bin/display-challenge
+COPY --from=binaries   /home/go/bin /usr/bin
+COPY --chown=root:root scripts/display-current-challenge.sh /usr/bin/display-challenge
 COPY --chown=root:root scripts/get_next_challenge.py /usr/bin/_get-next-challenge
 COPY --from=challenges /scripts/guess_flag /usr/bin/_guess-flag
 COPY --from=challenges /scripts/guess_flag.sh /usr/bin/_guess-flag.sh
