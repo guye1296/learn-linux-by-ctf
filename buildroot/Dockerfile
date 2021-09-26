@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM ubuntu:20.04
 
 # buildroot version to use
 ARG BUILDROOT_VERSION=2021.02-rc2

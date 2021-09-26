@@ -1,9 +1,9 @@
-FROM ubuntu:latest AS base
+FROM ubuntu:20.04 AS base
 
 # install required packages
 ENV DEBIAN_FRONTEND=noninteractive 
 RUN apt update
-RUN apt install -y python3 python3-pip less vim
+RUN apt install -y python3 python3-pip less vim man
 
 # TODO: figure out on how to install challenge dependencies that are needed for runtime
 

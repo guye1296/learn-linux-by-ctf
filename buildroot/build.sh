@@ -9,4 +9,4 @@ docker run \
     -v $PWD/buildroot-v86/:/buildroot-v86 \
     buildroot
 
-echo "See ./dist for built ISO"
+echo "See ./out/ for built ISO"
