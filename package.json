@@ -15,7 +15,8 @@
     "clean": "gatsby clean"
   },
   "dependencies": {
-    "gatsby": "^3.13.1",
+    "gatsby": "^2.32.13",
+    "gatsby-source-graphql": "^3.14.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1"
   }
