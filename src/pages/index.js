@@ -1,12 +1,11 @@
 import * as React from "react"
-import ChallengeLayout from "../components/challenge_layout"
+import { Link } from "gatsby"
+
 
 const IndexPage = () => {
   return(
-    <ChallengeLayout
-      index="0"
-      name="hello"
-    />
+    <p><Link to="/challenges/00.html">First Challenge?</Link></p>
+
   )
 }
 

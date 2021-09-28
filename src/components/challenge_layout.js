@@ -1,8 +1,9 @@
 import * as React from "react"
 import { useStaticQuery, graphql } from "gatsby"
 
-const ChallengeLayout = ({ index, name }) => {
-    const data = useStaticQuery(graphql`
+
+const ChallengeLayout = ({config, description }) => {
+    const titleQuery = useStaticQuery(graphql`
     query {
       site {
         siteMetadata {
@@ -10,13 +11,18 @@ const ChallengeLayout = ({ index, name }) => {
         }
       }
     }
-  `)
+    `)
+
+    const challengeName = config.challenge_name;
 
     return (
       <div classname="challenge-page">
-        <title>{data.site.siteMetadata.title}| #{index} </title>
-        <h1>Challenge #{index}: {name}</h1>
-        <p>Challenge contents goes here</p>
+        <title>{titleQuery.site.siteMetadata.title} | {challengeName} </title>
+        <h1>{challengeName}</h1>
+        <div
+          className="blog-post-content"
+          dangerouslySetInnerHTML={{ __html: description }}
+        />
         <div><p>Linux terminal goes here</p></div>
       </div>
     );

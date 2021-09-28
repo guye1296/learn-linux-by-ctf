@@ -15,9 +15,13 @@
     "clean": "gatsby clean"
   },
   "dependencies": {
+    "@arnau/gatsby-transformer-toml": "^1.0.2",
     "gatsby": "^2.32.13",
     "gatsby-source-filesystem": "^3.14.0",
     "gatsby-source-graphql": "^3.14.0",
+    "gatsby-transformer-remark": "^4.11.0",
+    "install": "^0.13.0",
+    "npm": "^7.24.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.1"
   }
