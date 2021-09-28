@@ -10,7 +10,7 @@ module.exports = exports.onCreateNode = ({node, actions, getNode}) => {
     switch (node.internal.type) {
         case 'MarkdownRemark':
         case 'TOML':
-            const slug = `${path.relative('.', getNode(node.parent).dir)}.html`;
+            const slug = `/${path.relative('.', getNode(node.parent).dir)}.html`;
 
             createNodeField({
                 node, 

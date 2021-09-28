@@ -5,8 +5,6 @@ import ChallengeLayout from "../components/challenge_layout"
 
 class Challenge extends React.Component {
     render() {
-        console.log("hello?");
-        console.log(this.props);
         return (
           <ChallengeLayout
               config={this.props.data.toml.general}

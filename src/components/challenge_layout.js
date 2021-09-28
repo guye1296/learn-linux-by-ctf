@@ -1,5 +1,6 @@
 import * as React from "react"
 import { useStaticQuery, graphql } from "gatsby"
+import ChallengeList from "./challenge_list"
 
 
 const ChallengeLayout = ({config, description }) => {
@@ -16,7 +17,8 @@ const ChallengeLayout = ({config, description }) => {
     const challengeName = config.challenge_name;
 
     return (
-      <div classname="challenge-page">
+      <div className="challenge-page">
+        <ChallengeList/>
         <title>{titleQuery.site.siteMetadata.title} | {challengeName} </title>
         <h1>{challengeName}</h1>
         <div
