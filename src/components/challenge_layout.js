@@ -1,6 +1,7 @@
 import * as React from "react"
 import { useStaticQuery, graphql } from "gatsby"
 import ChallengeList from "./challenge_list"
+import V86Machine from "./v86_machine"
 
 
 const ChallengeLayout = ({config, description }) => {
@@ -25,7 +26,7 @@ const ChallengeLayout = ({config, description }) => {
           className="blog-post-content"
           dangerouslySetInnerHTML={{ __html: description }}
         />
-        <div><p>Linux terminal goes here</p></div>
+        <V86Machine/>
       </div>
     );
 }
