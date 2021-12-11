@@ -1,33 +1,33 @@
 import * as React from "react"
 import { useStaticQuery, graphql, Link } from "gatsby"
-import {V86Starter} from "../v86/libv86"
 
 
 export default class V86Machine extends React.Component {
     constructor(props) {
         super(props);
-
         // Create a ref that `V86Starter` can use
         this.screenContainerRef = React.createRef();
-        this.emulator = new V86Starter({
-            wasm_path: "https://github.com/copy/v86/releases/download/latest/v86.wasm",
-            screen_container: this.screenContainerRef,
-            // Using public URLs as a placeholder
-            bios: {
-                url: "https://github.com/copy/v86/raw/master/bios/seabios.bin"
-            },
-            vga_bios: {
-                url: "https://github.com/copy/v86/raw/master/bios/vgabios.bin"
-            },
-            cdrom: {
-                url: "https://github.com/copy/images/raw/master/linux.iso"
-            },
-            autostart: false,
-        })
     }
 
     componentDidMount() {
-        this.emulator.run();
+        this.emulator = new window.V86Starter({
+            wasm_path: "/v86/v86.wasm",
+            screen_container: this.screenContainerRef.current,
+            memory_size: 32 * 1024 * 1024,
+            vga_memory_size: 2 * 1024 * 1024,
+
+            bios: {
+                url: "/bios/seabios.bin"
+            },
+            vga_bios: {
+                url: "/bios/vgabios.bin"
+            },
+            cdrom: {
+                url: "/linux/v86-linux.iso"
+            },
+            autostart: true,
+        });
+        // TODO: figure out why `this.emulator.run()` does not work
     }
 
     componentWillUnmount() {
@@ -35,12 +35,12 @@ export default class V86Machine extends React.Component {
     }
 
     render() {
-        return 
+        return (
             <div ref={this.screenContainerRef}>
-                <div style="white-space: pre; font: 14px monospace; line-height: 14px"></div>
-                <canvas style="display: none"></canvas>
+                <canvas style={{display: 'none'}}></canvas>
+                <div style={{whiteSpace: 'pre', font: '14px monospace', lineHeight: '14px'}}></div>
             </div>
-        ;
+        );
     }
 }
 
