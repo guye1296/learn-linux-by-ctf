@@ -23,7 +23,7 @@ const ChallengeList = () => {
     return (
       <ul>
         {challengesListQuery.allToml.edges.map((item, idx) => 
-          <li key={idx}><Link to={`/${item.node.fields.slug}`}>{item.node.general.challenge_name}</Link></li>
+          <li key={idx}><Link to={`${item.node.fields.slug}`}>{item.node.general.challenge_name}</Link></li>
         )}
       </ul>
     );
