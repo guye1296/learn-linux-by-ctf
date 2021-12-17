@@ -7,8 +7,8 @@ install: out/v86-linux.iso
 	cp $< ../web/images
 
 
-docker-image: buildroot-v86/build.sh
-	docker build -t buildroot .
+docker-image: build_docker_image_if_needed.sh Dockerfile buildroot-v86/build.sh
+	./$< buildroot $(filter-out $<,$^)
 
 clean:
 	docker rm buildroot

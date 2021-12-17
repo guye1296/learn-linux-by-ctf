@@ -7,6 +7,7 @@ docker run \
     -v $PWD/out:/out \
     -v $PWD/build:/build \
     -v $PWD/buildroot-v86/:/buildroot-v86 \
+    -v $PWD/ccache/:/root/.buildroot-ccache \
     buildroot
 
 echo "See ./out/ for built ISO"
