@@ -1,0 +1,2 @@
+echo "ready4ctf" > /dev/ttyS0
+reset

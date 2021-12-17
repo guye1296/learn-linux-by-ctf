@@ -25,8 +25,7 @@
 # now run any rc scripts
 ::sysinit:/etc/init.d/rcS
 
-# Put a getty on the serial port
-console::respawn:/sbin/getty -L  console 0 vt100 # GENERIC_SERIAL
+::respawn:-/bin/sh
 
 # Auto-login as root on ttyS0
 ::respawn:/sbin/getty ttyS0 38400 xterm -n -l /bin/sh
